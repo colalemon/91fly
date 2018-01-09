@@ -1,0 +1,46 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Castle.Windsor;
+using Castle.MicroKernel.Registration;
+
+namespace Nofly.Dependency
+{
+    public class IocManager : IIocManager
+    {
+
+        public static IocManager Instance { get; private set; }
+
+        public IWindsorContainer IocContainer { get; private set; }
+
+        static IocManager()
+        {
+            Instance = new IocManager();
+        }
+        public IocManager()
+        {
+            IocContainer = new WindsorContainer();
+
+            //注册自身
+            IocContainer.Register(Component.For<IocManager, IIocManager, IIocRegistrar, IIocResolver>().UsingFactoryMethod(() => this));
+        }
+           
+       
+
+        public void Dispose()
+        {
+            IocContainer.Dispose();
+        }
+
+        public T Resolve<T>()
+        {
+            throw new NotImplementedException();
+        }
+
+        public T Resolve<T>(Type type)
+        {
+            throw new NotImplementedException();
+        }
+    }
+}
