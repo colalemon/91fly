@@ -50,7 +50,11 @@ namespace Nofly.Modules
 
         }
 
-
+        /// <summary>
+        ///查找所有的的模块
+        /// </summary>
+        /// <param name="moduleType"></param>
+        /// <returns></returns>
         public static List<Type> FillAllModules(Type moduleType)
         {
             var list = new List<Type>();
@@ -58,6 +62,11 @@ namespace Nofly.Modules
             return list;
         }
 
+        /// <summary>
+        /// 当前模块的的依赖项
+        /// </summary>
+        /// <param name="moduleType"></param>
+        /// <returns></returns>
         public static List<Type> FindDependencyModules(Type moduleType)
         {
             List<Type> list = new List<Type>();
@@ -75,6 +84,11 @@ namespace Nofly.Modules
             return list;
         }
 
+        /// <summary>
+        /// 广搜查找算法
+        /// </summary>
+        /// <param name="modules"></param>
+        /// <param name="module"></param>
         public static void WSModules(List<Type> modules, Type module)
         {
             if (modules.Contains(module)) { return; }
