@@ -49,11 +49,11 @@ namespace Nofly.Modules
             Logger.Debug("Found " + moduleTypes.Count + " ABP modules in total.");
 
             RegisterModules(moduleTypes);
-            //CreateModules(moduleTypes);
+            CreateModules(moduleTypes);
 
             //AbpModuleCollection.EnsureKernelModuleToBeFirst(_modules);
 
-            //SetDependencies();
+            SetDependencies();
 
             Logger.DebugFormat("{0} modules loaded.", _modules.Count);
         }
@@ -72,6 +72,53 @@ namespace Nofly.Modules
                 _iocManager.RegisterIfNot(moduleType);
             }
         }
-      
+        private void CreateModules(ICollection<Type> moduleTypes)
+        {
+            foreach (var moduleType in moduleTypes)
+            {
+                var moduleObject = _iocManager.Resolve(moduleType) as NoflyModule;
+                if (moduleObject == null)
+                {
+                    throw new Exception("This type is not an ABP module: " + moduleType.AssemblyQualifiedName);
+                }
+
+               // moduleObject.IocManager = _iocManager;
+                //moduleObject.Configuration = _iocManager.Resolve<IAbpStartupConfiguration>();
+
+                var moduleInfo = new NoflyModuleInfo(moduleType, moduleObject);
+
+                _modules.Add(moduleInfo);
+
+                if (moduleType == _startupModuleType)
+                {
+                    StartupModule = moduleInfo;
+                }
+
+                Logger.DebugFormat("Loaded module: " + moduleType.AssemblyQualifiedName);
+            }
+        }
+        private void SetDependencies()
+        {
+            foreach (var moduleInfo in _modules)
+            {
+                moduleInfo.Dependencies.Clear();
+
+                //Set dependencies for defined DependsOnAttribute attribute(s).
+                foreach (var dependedModuleType in NoflyModule.FindDependencyModules(moduleInfo.Type))
+                {
+                    var dependedModuleInfo = _modules.FirstOrDefault(m => m.Type == dependedModuleType);
+                    if (dependedModuleInfo == null)
+                    {
+                        throw new Exception("Could not find a depended module " + dependedModuleType.AssemblyQualifiedName + " for " + moduleInfo.Type.AssemblyQualifiedName);
+                    }
+
+                    if ((moduleInfo.Dependencies.FirstOrDefault(dm => dm.Type == dependedModuleType) == null))
+                    {
+                        moduleInfo.Dependencies.Add(dependedModuleInfo);
+                    }
+                }
+            }
+        }
+
     }
 }

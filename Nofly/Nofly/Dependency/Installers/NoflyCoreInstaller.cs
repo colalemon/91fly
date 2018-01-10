@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using Nofly.Modules;
 
 namespace Nofly.Dependency.Installers
 {
@@ -12,7 +13,9 @@ namespace Nofly.Dependency.Installers
     {
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
-            
+            container.Register(
+                 Component.For<INoflyModuleManager, NoflyModuleManager>().ImplementedBy<NoflyModuleManager>().LifestyleSingleton()
+                );
         }
     }
 }

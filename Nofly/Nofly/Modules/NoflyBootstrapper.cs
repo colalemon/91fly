@@ -31,6 +31,12 @@ namespace Nofly.Modules
         /// </summary>
         private ILogger _logger;
 
+        /// <summary>
+        /// 模块管理者
+        /// </summary>
+
+        private NoflyModuleManager _moduleManager;
+
         #region  构造函数
 
         private NoflyBootstrapper(Type startupModule)
@@ -69,6 +75,10 @@ namespace Nofly.Modules
                 RegisterBootstrapper();
                 IocManager.IocContainer.Install(new NoflyCoreInstaller());
 
+
+                _moduleManager = IocManager.Resolve<NoflyModuleManager>();
+                _moduleManager.Initialize(StartupModule);
+                _moduleManager.StartModules();
 
             }
             catch (Exception ex)
